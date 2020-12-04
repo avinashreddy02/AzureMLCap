@@ -2,7 +2,7 @@ from sklearn.ensemble import RandomForestRegressor
 import argparse
 import os
 import numpy as np
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_absolute_error
 import joblib
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
@@ -24,11 +24,11 @@ def clean_data(df):
     df.drop("date",inplace = True,axis = 1)
     y_df = df.pop("price")
     
-    scalar = StandardScaler()
-
-    x_df = scalar.fit(df)
     
-    return x_df,y_df
+
+    
+    
+    return df,y_df
 
 
 def main():
@@ -36,7 +36,7 @@ def main():
     parser = argparse.ArgumentParser()
     
     parser.add_argument('--n_estimators',type = int, default = 100, help = "number of estimators")
-    parser.add_argument('--max_depth',type = int, help = "depth of the tree")
+    parser.add_argument('--max_depth',type = int,default = 8, help = "depth of the tree")
     parser.add_argument('--min_samples_split',type = int, default = 2, help = "the minimum number of samples required to split an internal node")
     
     args = parser.parse_args()
@@ -51,26 +51,26 @@ def main():
     run.log("accuracy",np.float(accuracy))
     
     y_pred = model.predict(x_test)
-    mse = mean_squared_error(y_true,y_pred)
-    print(mse)
+    mae = mean_absolute_error(y_test,y_pred)
+    run.log("MAE",np.float(mae))
     
-    os.makedirs('outputs',exit_ok = True)
-    joblib.dump(model,'output/model.joblib')
+    os.makedirs('outputs',exist_ok = True)
+    joblib.dump(model,'outputs/model.joblib')
     
 
 
-subscription_id = '572f8abf-a1a0-4b78-8c6d-3630739c72b5'
-resource_group = 'aml-quickstarts-129095'
-workspace_name = 'quick-starts-ws-129095'
+subscription_id = '7395406a-64a8-4774-b0c2-0d5dafb2a8ce'
+resource_group = 'aml-quickstarts-129197'
+workspace_name = 'quick-starts-ws-129197'
 
 workspace = Workspace(subscription_id, resource_group, workspace_name)
 
-dataset = Dataset.get_by_name(workspace, name='house_sale')
+dataset = Dataset.get_by_name(workspace, name='house_sales')
 ds = dataset.to_pandas_dataframe()
     
-x_df, y_df = clean_data(ds)
+x, y = clean_data(ds)
 
-x_train,x_test,y_train,y_test = train_test_split(x_df,y_df,test_size = 0.3, random_state = 42)
+x_train,x_test,y_train,y_test = train_test_split(x,y,test_size = 0.3, random_state = 42)
 
 run = Run.get_context()
 
