@@ -1,0 +1,83 @@
+from sklearn.ensemble import RandomForestRegressor
+import argparse
+import os
+import numpy as np
+from sklearn.metrics import mean_squared_error
+import joblib
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import OneHotEncoder
+import pandas as pd
+from azureml.core.workspace import Workspace
+from azureml.core.dataset import Dataset
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import mean_squared_error
+from azureml.core.run import Run
+
+# azureml-core of version 1.0.72 or higher is required
+# azureml-dataprep[pandas] of version 1.1.34 or higher is required
+from azureml.core import Workspace, Dataset
+
+
+def clean_data(df):
+    df.drop("id",inplace = True,axis = 1)
+    df.drop("zipcode",inplace = True,axis = 1)
+    df.drop("date",inplace = True,axis = 1)
+    y_df = df.pop("price")
+    
+    scalar = StandardScaler()
+
+    x_df = scalar.fit(df)
+    
+    return x_df,y_df
+
+
+def main():
+    
+    parser = argparse.ArgumentParser()
+    
+    parser.add_argument('--n_estimators',type = int, default = 100, help = "number of estimators")
+    parser.add_argument('--max_depth',type = int, help = "depth of the tree")
+    parser.add_argument('--min_samples_split',type = int, default = 2, help = "the minimum number of samples required to split an internal node")
+    
+    args = parser.parse_args()
+    
+    run.log("Number of Estimators", np.int(args.n_estimators))
+    run.log("maximum depth", np.int(args.max_depth))
+    run.log("minimum samples split",np.int(args.min_samples_split))
+    
+    model = RandomForestRegressor(n_estimators = args.n_estimators,max_depth = args.max_depth,
+                                 min_samples_split = args.min_samples_split).fit(x_train,y_train)
+    accuracy = model.score(x_test,y_test)
+    run.log("accuracy",np.float(accuracy))
+    
+    y_pred = model.predict(x_test)
+    mse = mean_squared_error(y_true,y_pred)
+    print(mse)
+    
+    os.makedirs('outputs',exit_ok = True)
+    joblib.dump(model,'output/model.joblib')
+    
+
+
+subscription_id = '572f8abf-a1a0-4b78-8c6d-3630739c72b5'
+resource_group = 'aml-quickstarts-129095'
+workspace_name = 'quick-starts-ws-129095'
+
+workspace = Workspace(subscription_id, resource_group, workspace_name)
+
+dataset = Dataset.get_by_name(workspace, name='house_sale')
+ds = dataset.to_pandas_dataframe()
+    
+x_df, y_df = clean_data(ds)
+
+x_train,x_test,y_train,y_test = train_test_split(x_df,y_df,test_size = 0.3, random_state = 42)
+
+run = Run.get_context()
+
+if __name__ == '__main__':
+    
+    main()
+    
+
+
+
