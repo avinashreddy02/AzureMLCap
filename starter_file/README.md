@@ -68,7 +68,10 @@ RunDetails(remote_run).show()
 remote_run.get_status()
 remote_run.wait_for_completion()
 ```
-![Run Details1](runwidget_1.PNG)
+Screen shot of the run details widget
+
+![](runwidget_1.PNG)
+![](runwidget_1.PNG)
 
 ### Results <a name="automl_result"></a>
 *TODO*: What are the results you got with your automated ML model? What were the parameters of the model? How could you have improved it?
