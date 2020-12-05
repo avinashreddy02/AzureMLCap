@@ -17,16 +17,17 @@ from azureml.core.run import Run
 # azureml-dataprep[pandas] of version 1.1.34 or higher is required
 from azureml.core import Workspace, Dataset
 
+workspace = Workspace(subscription_id, resource_group, workspace_name)
+
+dataset = Dataset.get_by_name(workspace, name='house_sales')
+ds = dataset.to_pandas_dataframe()
+
 
 def clean_data(df):
     df.drop("id",inplace = True,axis = 1)
     df.drop("zipcode",inplace = True,axis = 1)
     df.drop("date",inplace = True,axis = 1)
     y_df = df.pop("price")
-    
-    
-
-    
     
     return df,y_df
 
@@ -59,14 +60,8 @@ def main():
     
 
 
-subscription_id = '7395406a-64a8-4774-b0c2-0d5dafb2a8ce'
-resource_group = 'aml-quickstarts-129197'
-workspace_name = 'quick-starts-ws-129197'
 
-workspace = Workspace(subscription_id, resource_group, workspace_name)
 
-dataset = Dataset.get_by_name(workspace, name='house_sales')
-ds = dataset.to_pandas_dataframe()
     
 x, y = clean_data(ds)
 
