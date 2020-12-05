@@ -26,7 +26,7 @@ In This Project i have Considered a Regression problem, it's a process of predic
 ## Dataset <a name="dataset"></a>
 
 ### Overview
-In this project i have considered housing sales data set of king county, i have found this data set on kaggle , this data contains homes sold between may 2014 to may 2015, it requires minimal data cleaning and has an understandable list of variables, this enables me to focus more on required configuration to work with AzureML 
+In this project i have considered housing sales data set of king county, i have found this data set on [kaggle](https://www.kaggle.com/harlfoxem/housesalesprediction) , this data contains homes sold between may 2014 to may 2015, it requires minimal data cleaning and has an understandable list of variables, this enables me to focus more on required configuration to work with AzureML 
 
 ### Task <a name="task"></a>
 My Objective is to build a prediction model that predicts the housing prices from the set of given house features like , number of bedrooms, number of bathrooms , i will be perfomring this using Regression Task 
@@ -35,7 +35,40 @@ My Objective is to build a prediction model that predicts the housing prices fro
 i have downloaded the housing sale dataset from kaggle first and uploaded the csv file to datastore , once that dataset is available in Azure i have used the below code to access the data from the datastore 
 
 ## Automated ML <a name="automl"></a>
-*TODO*: Give an overview of the `automl` settings and configuration you used for this experiment
+While setting up the AutomL run we first need to define the automl configuration which has different parameters like task type whether it's regression or classification and label column, primary metric, and number of cross validations 
+
+here are the automl settings i have selected for the automl run 
+```
+automl_settings = {
+    "iteration_timeout_minutes": 10,
+    "experiment_timeout_hours" : 0.3,
+    "enable_early_stopping": True,
+    "primary_metric" : 'normalized_mean_absolute_error',
+    "featurization": 'auto',
+    "verbosity": logging.INFO,
+    "n_cross_validations": 5
+}
+
+# TODO: Put your automl config here
+automl_config = AutoMLConfig(
+    task = 'regression',
+    debug_log = 'automl_reg_errors.log',
+    training_data = x_train,
+    label_column_name = "price",
+    **automl_settings
+)
+
+```
+
+next we submit the automl run which we can monitor using run widgets in notebook or also azure ML studio UI , below are the screen shots of the progress 
+```
+remote_run = experiment.submit(automl_config, show_output = True)
+
+RunDetails(remote_run).show()
+remote_run.get_status()
+remote_run.wait_for_completion()
+```
+![Run Details1](runwidget_1.PNG)
 
 ### Results <a name="automl_result"></a>
 *TODO*: What are the results you got with your automated ML model? What were the parameters of the model? How could you have improved it?
