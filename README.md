@@ -81,7 +81,7 @@ Screen shot of the run details widget
 
 ![](runwidget_1.PNG)
 
-![](runwidget_1.PNG)
+![](runwidget_2.PNG)
 
 ### Results <a name="automl_result"></a>
 
@@ -134,9 +134,9 @@ Status: Completed)
 ```
 Screen shots of the Best model and the steps and how it performed 
 
-![]automl_bestrun1.PNG
+![](automl_bestrun1.PNG)
 
-![]true_predict_automl.PNG
+![](true_predict_automl.PNG)
 
 ## Hyperparameter Tuning <a name="hyperdrive"></a>
 
@@ -170,13 +170,13 @@ run.get_status()
 run.wait_for_completion()
 ```
 
-![]hyper_runwidget.PNG
+![](hyper_runwidget.PNG)
 
-![]hyper_runwidget2.PNG
+![](hyper_runwidget2.PNG)
 
-![]hyperdrive_bestrun.PNG
+![](hyperdrive_bestrun.PNG)
 
-![]hyperdrive_runwidget3.PNG
+![](hyperdrive_runwidget3.PNG)
 
 ## Model Deployment <a name="deployment"></a>
 
@@ -217,9 +217,9 @@ print(service.state)
 
 ```
 
-![]model_endpoint1.PNG
+![](model_endpoint1.PNG)
 
-![]model_endpoint.PNG
+![](model_endpoint.PNG)
 
 ## Screen Recording <a name="recording"></a>
 https://drive.google.com/file/d/1tkQBvxxhjQakv0Ar0zY1sItEpxAm4jQa/view?usp=sharing
