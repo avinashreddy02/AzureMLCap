@@ -18,7 +18,7 @@
 In This Project i have Considered a Regression problem, it's a process of predicting a continuous value instead of discrete value given an input data, i have used two different techniques to train the model , one is using the AutoML which will trigger the training on multiple different models and second one using Hyperdrive configuration with single model
 
 ## Project Set Up and Installation
-i don't have any specific environment that needs to be setup 
+I don't have any specific environment that needs to be setup 
 
 ## Dataset <a name="dataset"></a>
 
@@ -29,7 +29,7 @@ In this project i have considered housing sales data set of king county, i have 
 My Objective is to build a prediction model that predicts the housing prices from the set of given house features like , number of bedrooms, number of bathrooms , i will be perfomring this using Regression Task 
 
 ### Access
-i have downloaded the housing sale dataset from kaggle first and uploaded the csv file to datastore , once that dataset is available in Azure i have used the below code to access the data from the datastore 
+I have downloaded the housing sale dataset from kaggle first and uploaded the csv file to datastore , once that dataset is available in Azure i have used the below code to access the data from the datastore 
 ```
 key = "house_sales"
 description_text = "house sales prediction dataset"
@@ -45,7 +45,7 @@ df.describe()
 ## Automated ML <a name="automl"></a>
 While setting up the AutomL run we first need to define the automl configuration which has different parameters like task type whether it's regression or classification and label column, primary metric, and number of cross validations 
 
-for this experiment i have selected regression as the task, Price as the label column, and for regression task normalized mean absolute error actually generalizes the model better so i have selected that and i have defined the timout minutes based on the common practices 
+For this experiment i have selected regression as the task, Price as the label column, and for regression task normalized mean absolute error actually generalizes the model better so i have selected that and i have defined the timout minutes based on the common practices 
 here are the automl settings i have selected for the automl run 
 ```
 automl_settings = {
@@ -69,7 +69,7 @@ automl_config = AutoMLConfig(
 
 ```
 
-next we submit the automl run which we can monitor using run widgets in notebook or also azure ML studio UI , below are the screen shots of the progress 
+Next we submit the automl run which we can monitor using run widgets in notebook or also azure ML studio UI , below are the screen shots of the progress 
 ```
 remote_run = experiment.submit(automl_config, show_output = True)
 
@@ -226,5 +226,5 @@ https://drive.google.com/file/d/1tkQBvxxhjQakv0Ar0zY1sItEpxAm4jQa/view?usp=shari
 
 ## Standout Suggestions
 
-i faced few problems with virtual enviroment , i would suggest it's better to have a different kind of structure 
-becuase of the slowness of the virtual lab it was difficult the train a model with huge dataset it would be great if you can define the datasets to choose from in the future which will be compatible with automl trianing 
+I have faced few problems with virtual enviroment , i would suggest it's better to have a different kind of structure 
+becuase of the slowness of the virtual lab it was difficult the train a model with huge dataset it would be great if you can define the list of datasets to choose from in the future which will be compatible with automl trianing 
