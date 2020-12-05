@@ -30,6 +30,17 @@ My Objective is to build a prediction model that predicts the housing prices fro
 
 ### Access
 i have downloaded the housing sale dataset from kaggle first and uploaded the csv file to datastore , once that dataset is available in Azure i have used the below code to access the data from the datastore 
+```
+key = "house_sales"
+description_text = "house sales prediction dataset"
+
+if key in ws.datasets.keys():
+    
+    dataset = ws.datasets[key]
+
+df = dataset.to_pandas_dataframe()
+df.describe()
+```
 
 ## Automated ML <a name="automl"></a>
 While setting up the AutomL run we first need to define the automl configuration which has different parameters like task type whether it's regression or classification and label column, primary metric, and number of cross validations 
@@ -69,6 +80,7 @@ remote_run.wait_for_completion()
 Screen shot of the run details widget
 
 ![](runwidget_1.PNG)
+
 ![](runwidget_1.PNG)
 
 ### Results <a name="automl_result"></a>
@@ -123,6 +135,7 @@ Status: Completed)
 Screen shots of the Best model and the steps and how it performed 
 
 ![]automl_bestrun1.PNG
+
 ![]true_predict_automl.PNG
 
 ## Hyperparameter Tuning <a name="hyperdrive"></a>
@@ -158,8 +171,11 @@ run.wait_for_completion()
 ```
 
 ![]hyper_runwidget.PNG
+
 ![]hyper_runwidget2.PNG
+
 ![]hyperdrive_bestrun.PNG
+
 ![]hyperdrive_runwidget3.PNG
 
 ## Model Deployment <a name="deployment"></a>
@@ -202,6 +218,7 @@ print(service.state)
 ```
 
 ![]model_endpoint1.PNG
+
 ![]model_endpoint.PNG
 
 ## Screen Recording <a name="recording"></a>
