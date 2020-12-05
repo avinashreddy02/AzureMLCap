@@ -5,274 +5,226 @@
 - [Data Set](##dataset)
     - [Task](###task)
     - [Access](###access)
-- [Set Up and Installation](##setup)
 - [Automated ML](##automl)
     - [Result](##automl_result)
-    - [Thoughts about Improvement](##automl_improve)
 - [Hyperparameter Tuning](##hyperdrive)
     - [Result](##hyperdrive_result)
-    - [Thoughts about Improvement](##hyperdrive_improve)
  - [Model Deployment](##deployment)
- - [Recreen Recording](##recording) 
+ - [screen Recording](##recording) 
  - [Standout Suggestions](##standout)
 
-## Problem Statement <a name="problem"></a>
-In this project we will consider a regression problem, i.e. a process where a model learns to predict a continuous value output for a given input data. We first apply AutoML where multiple models are trained to fit the training data. We then choose and save the best model, that is, the model with the best score. Secondly, we build a simple neural network consisting of two hidden layers. In particular, a keras model where we tune hyperparameters using HyperDrive.  
+# House Sales in King County USA <a name="problem"></a>
 
+In This Project i have Considered a Regression problem, it's a process of predicting a continuous value instead of discrete value given an input data, i have used two different techniques to train the model , one is using the AutoML which will trigger the training on multiple different models and second one using Hyperdrive configuration with single model
 
-## Dataset  <a name="dataset"></a>
-In this project we consider the *California housing* data set from [kaggle](https://www.kaggle.com/camnugent/california-housing-prices). The data contains information from the 1990 California census. So although it may not help us with predicting current housing prices, we chose the data set because it requires rudimentary data cleaning, has an easily understandable list of variables and sits at an optimal size between being to toyish and too cumbersome. This enables us to focus on all required configuration to work with Azure ML. 
+## Project Set Up and Installation
+I don't have any specific environment that needs to be setup 
 
-### Task  <a name="task"></a>
-Our objective is to build prediction models that predict the housing prices from the set of given house features.
+## Dataset <a name="dataset"></a>
 
-### Access <a name="access"></a>
-We download the *housing.csv* from kaggle localy and upload the csv file to the Azure ML platform.
+### Overview
+In this project i have considered housing sales data set of king county, i have found this data set on [kaggle](https://www.kaggle.com/harlfoxem/housesalesprediction) , this data contains homes sold between may 2014 to may 2015, it requires minimal data cleaning and has an understandable list of variables, this enables me to focus more on required configuration to work with AzureML 
 
-## General Set Up <a name="setup"></a>
-Before we either apply Automated ML or tune hyperparamteres for a keras model, the following steps are required:
-- Import all needed dependencies
-- Set up a Workspace and initialize an experiment
-- Create or attach a compute resource (VM with cpu for automated ML and VM with gpu for hyperdrive)
-- Load csv file and either register data set in the *Dataset* section or read directly to the notebook
-- Initialize AutoMLConfig / HyperDriveConfig object
-- Submit experiment 
-- Save best model
-- Deploy and consume best model (either for the automated ML or hyperdrive run)
+### Task <a name="task"></a>
+My Objective is to build a prediction model that predicts the housing prices from the set of given house features like , number of bedrooms, number of bathrooms , i will be perfomring this using Regression Task 
 
+### Access
+I have downloaded the housing sale dataset from kaggle first and uploaded the csv file to datastore , once that dataset is available in Azure i have used the below code to access the data from the datastore 
+```
+key = "house_sales"
+description_text = "house sales prediction dataset"
+
+if key in ws.datasets.keys():
+    
+    dataset = ws.datasets[key]
+
+df = dataset.to_pandas_dataframe()
+df.describe()
+```
 
 ## Automated ML <a name="automl"></a>
-To configure the Automated ML run we need to specify what kind of a task we are dealing with, the primary metric, train and validation data sets (which are in *TabularDataset*  form) and the target column name. Featurization is set to "auto", meaning that the featurization step should be done automatically. To avoid overfitting we enable early stopping. 
+While setting up the AutomL run we first need to define the automl configuration which has different parameters like task type whether it's regression or classification and label column, primary metric, and number of cross validations 
+
+For this experiment i have selected regression as the task, Price as the label column, and for regression task normalized mean absolute error actually generalizes the model better so i have selected that and i have defined the timout minutes based on the common practices 
+here are the automl settings i have selected for the automl run 
 ```
-automl_setting={
-    "featurization": "auto",
-    "experiment_timeout_minutes": 30,
+automl_settings = {
+    "iteration_timeout_minutes": 10,
+    "experiment_timeout_hours" : 0.3,
     "enable_early_stopping": True,
+    "primary_metric" : 'normalized_mean_absolute_error',
+    "featurization": 'auto',
     "verbosity": logging.INFO,
-    "compute_target": compute_target
+    "n_cross_validations": 5
 }
 
-task="regression" 
-automl_config = AutoMLConfig( 
-    task=task, 
-    primary_metric='normalized_root_mean_squared_error', 
-    training_data=train, 
-    validation_data = test, 
-    label_column_name='median_house_value', 
-    **automl_setting
+# TODO: Put your automl config here
+automl_config = AutoMLConfig(
+    task = 'regression',
+    debug_log = 'automl_reg_errors.log',
+    training_data = x_train,
+    label_column_name = "price",
+    **automl_settings
 )
+
 ```
 
-Next we submit the hyperdrive run to the experiment (i.e. launch an experiment) and show run details with the RunDeatails widget:
- ``` 
-automl_run = experiment.submit(automl_config, show_output=True)
-RunDetails(automl_run).show()
- ``` 
-Screenshots of the RunDetails widget:
-![rund_detail1](https://github.com/elenacramer/nd00333-capstone/blob/master/starter_file/automated_ml/screenshots/automl_run.png)
-![run_details2](https://github.com/elenacramer/nd00333-capstone/blob/master/starter_file/automated_ml/screenshots/autml_run2.png)
+Next we submit the automl run which we can monitor using run widgets in notebook or also azure ML studio UI , below are the screen shots of the progress 
+```
+remote_run = experiment.submit(automl_config, show_output = True)
 
-We collect and save the best model, that is, keras model with the tuned hyperparameters which yield the lowest mean absolute error:
- ``` 
-best_run=hyperdrive_run.get_best_run_by_primary_metric()
-best_run_metrics = best_run.get_metrics()
- ``` 
-For a complete code overview, we refer to the jypter notebook *automl.ipynb*.
+RunDetails(remote_run).show()
+remote_run.get_status()
+remote_run.wait_for_completion()
+```
+Screen shot of the run details widget
+
+![](runwidget_1.PNG)
+
+![](runwidget_1.PNG)
 
 ### Results <a name="automl_result"></a>
-The best model from the automated ML run is *LightGBM* with mean absolute error (mae) of 32.376,38. 
 
-The following screenshots shows the best run ID and mae:
-![best_model](https://github.com/elenacramer/nd00333-capstone/blob/master/starter_file/automated_ml/screenshots/best_model.png)
+Best automl model is voting ensemble with nomalized mean absolute value of 0.0089 and mean absolute error of 68316 and some of the parameters of the model as boositng type , learning rate, max_depth of the tree, number of estimators and the model that is used is LigbtGBMregressor we could improve the model by training with more data and adding different types of data which helps the model to generalize better later 
 
-### Thoughts about improvement <a name="automl_imrpove"></a>
-Two thoughts of how we we can perhaps improve the model:
-- Use customized featurization by passing a *FeaturizationConfig* object to the featurization parameter of the AutoMLConfig class. This, for example, enables us to choose a particular encoder for the categorical variables, a strategy to impute missing values, ect..
-- *LightGBM* is a fast, distributed, high-performance gradient-boosting framework based on decision tree algorithms. We can experiment with different configurations of the model, that is, tune some of the hyperparameters such as *num_leaves*, *learning_rate*, *feature_fraction*,... .
+
+```
+best_run,fitted_model = remote_run.get_output()
+print(best_run)
+print(fitted_model.steps)
+
+
+Run(Experiment: Avinash-AutoML,
+Id: AutoML_d8b08989-fcef-4c17-9747-bbd0f27cd685_25,
+Type: None,
+Status: Completed)
+[('datatransformer', DataTransformer(enable_dnn=None, enable_feature_sweeping=None,
+                feature_sweeping_config=None, feature_sweeping_timeout=None,
+                featurization_config=None, force_text_dnn=None,
+                is_cross_validation=None, is_onnx_compatible=None, logger=None,
+                observer=None, task=None, working_dir=None)), ('prefittedsoftvotingregressor', PreFittedSoftVotingRegressor(estimators=[('0',
+                                          Pipeline(memory=None,
+                                                   steps=[('maxabsscaler',
+                                                           MaxAbsScaler(copy=True)),
+                                                          ('lightgbmregressor',
+                                                           LightGBMRegressor(boosting_type='gbdt',
+                                                                             class_weight=None,
+                                                                             colsample_bytree=1.0,
+                                                                             importance_type='split',
+                                                                             learning_rate=0.1,
+                                                                             max_depth=-1,
+                                                                             min_child_samples=20,
+                                                                             min_child_weight=0.001,
+                                                                             min_split_gain=0.0,
+                                                                             n_estimators=100,
+                                                                             n_jobs=1,
+                                                                             num_leaves=31,
+                                                                             objective=None,
+                                                                             random_state=None,
+                                                                             reg_alpha=0.0,
+                                                                             reg_lambda=0.0,
+                                                                             silent=True,
+                                                                             subsample=1.0,
+                                                                             subsample_for_bin=200000,
+                                                                             subsample_freq=0,
+                                                                             verbose=-1))],
+                                                   verbose=False))],
+                             weights=[1.0]))]
+
+```
+Screen shots of the Best model and the steps and how it performed 
+
+![]automl_bestrun1.PNG
+
+![]true_predict_automl.PNG
 
 ## Hyperparameter Tuning <a name="hyperdrive"></a>
-We will compare the above automl run with a deep neural network, in particular, a *keras Sequential model* with two hidden layers. We tune the following hyperparamters with HyperDrive:
-- batch size,
-- number of epochs,
-- number of units for the two hidden layers.
 
-To initialize a HyperDriveConfog class we need to specify the following:
-- Hyperparameter space: RandomParameterSampling defines a random sampling over the hyperparameter search spaces. The advantages here are that it is not so exhaustive and the lack of bias. It is a good first choice.
-```
-ps = RandomParameterSampling(
-    {
-        '--batch-size': choice(25, 50, 100),
-        '--number-epochs': choice(5,10,15),
-        '--first-layer-neurons': choice(range(2,12,2)),
-        '--second-layer-neurons': choice(range(2,12,2))
-    }
-)
-```
-- Early termination policy: BanditPolicy defines an early termination policy based on slack criteria and a frequency interval for evaluation. Any run that does ot fall within the specified slack factor (or slack amount) of the evaluation metric with respect to the best performing run will be terminated. Since our script reports metrics periodically during the execution, it makes sense to include early termination policy. Moreover, doing so avoids overfitting the training data. For more aggressive savings, we chose the Bandit Policy with a small allowable slack.
-```
-policy =  BanditPolicy(evaluation_interval=2, slack_factor=0.1, slack_amount=None, delay_evaluation=0)
-```
+I have selected the randomforest regressor which is a tree based model for hyperparameter tuning , this model is simple yet powerful when compared with other Tree based models. It provides higher accuracy through cross validation , it will handle the missing values and maintains accuracy of a large portion of the data
 
-- A ScriptRunConfig for setting up configuration for script/notebook runs (here we use the script "keras_train.py"). Since we are using a keras model, we also need to set up an environment.
+I have defined 3 different hyper parameters for the model and implemented them usig random parameter sampling to find the best model 
+
+1. n_estimators : it defines the number of trees in the forest , i have tuned it for 3 different values 100, 120, 140
+2. Max_depth : the maximum depth of tree , if we select none then nodes are expanded until all leaves are pure , i have defined 3 values as 3, 5, 8
+3. Min_samples_split : the minimum number of samples required to split an internal node , value defined for this are 2, 4, 8
 
 ```
-# Evironment set up
-# conda_dependencies.yml is stored in the working directory
-
-from azureml.core import Environment
-
-keras_env = Environment.from_conda_specification(name = 'keras-2.3.1', file_path = 'conda_dependencies.yml')
-
-# Specify a GPU base image
-keras_env.docker.enabled = True
-keras_env.docker.base_image = 'mcr.microsoft.com/azureml/openmpi3.1.2-cuda10.0-cudnn7-ubuntu18.04'
-
-# ScriptrunConfig 
-src = ScriptRunConfig(source_directory=project_folder,
-                      script='keras_train.py',
-                      compute_target=compute_target,
-                      environment=keras_env)
- ```     
-- Primary metric name and goal: The name of the primary metric reported by the experiment runs (mae) and if we wish to maximize or minimize the primary metric (minimze).
-- Max total runs and max concurrent runs : The maximum total number of runs to create and the maximum number of runs to execute concurrently. Note: the number of concurrent runs is gated on the resources available in the specified compute target. Hence ,we need to ensure that the compute target has the available resources for the desired concurrency.
-
-The HyperDriveConfig obejct:
- ``` 
-hyperdrive_config = HyperDriveConfig(
-    hyperparameter_sampling = ps, 
-    primary_metric_name ='MAE', 
-    primary_metric_goal = PrimaryMetricGoal.MINIMIZE, 
-    max_total_runs = 8, 
-    max_concurrent_runs=4, 
-    policy=policy, 
-    run_config=src
-)
- ``` 
-Next we submit the hyperdrive run to the experiment (i.e. launch an experiment) and show run details with the RunDeatails widget:
- ``` 
-hyperdrive_run = experiment.submit(hyperdrive_config, show_output=True)
-RunDetails(hyperdrive_run).show()
- ``` 
-Screenshot of the RunDetails widget:
-![rundetails_hyperdrive](https://github.com/elenacramer/nd00333-capstone/blob/master/starter_file/hyperdrive_keras_model/screenshots/hyperdrive_run_completed.png) 
-
-We collect and save the best model, that is, keras model with the tuned hyperparameters which yield the lowest mean absolute error:
- ``` 
-best_run=hyperdrive_run.get_best_run_by_primary_metric()
-best_run_metrics = best_run.get_metrics()
- ``` 
- 
-### Results <a name="hyperdrive_result"></a>
-Here are the results of our hyperdrive run, that is, the tuned hyperparameters and mean absolute error:
- ``` 
-{'Batch Size': 25,
- 'Epochs': 10,
- 'First hidden layer': 4,
- 'Second hidden layer': 4,
- 'Loss': 50654265725.023254,
- 'MAE': 193928.734375}
-  ``` 
-Here is the screenshot of the best model:
-![best_model_keras](https://github.com/elenacramer/nd00333-capstone/blob/master/starter_file/hyperdrive_keras_model/screenshots/best_model_hyperdirve.png)
-
-### Thoughts about improvement <a name="hyperdrive_improve"></a>
-We can perhaps improve the mean absolute error score by:
-- choosing the more exhaustive *Grid Sampling strategy*,
-- keeping, for example, the number of epochs fixed and tune the hyperparameter *learning rate* for the keras optimizer *adam*,
-- choosing a different number of hidden layers, i.e. tune the number of hidden layers as well.
-
-## Deploy Model to ACI <a name="deployment"></a>
-The keras model with the tuned hyperparameters archieved a better score, that is, a lower mean absolute error, thus we will deploy that model. To do so, we need to:
-- Create a *scoring script* that will be invoked by the web service call (see *scoring.py*). Note that the scoring script must have two required functions, *init()* and *run(input_data)*.
-    - An init() function: typically loads the model into a global object. This function is executed only once when the Docker container is started.
-    - An run(input_data) function: the model is used to predict a value based on the input data. The input and output to run typically use JSON as serialization and de-serialization format (it is not limited to that).
-- Create an *environment file* so that Azure Machine Learning can install the necessary packages in the Docker image which are required by your scoring script. In this case, we need to specify conda packages tensorflow and keras (see *myenv.yml*).
-
-- Create the *inference configuration* and *deployment configuration* and deploy to ACI. 
+param_sampling = RandomParameterSampling({
+    "--n_estimators": choice(100,120,140),
+    "--max_depth": choice(3,5,8),
+    "--min_samples_split": choice(2,4,8)
+})
 ```
-from azureml.core.webservice import AciWebservice
-from azureml.core.model import InferenceConfig
-from azureml.core.model import Model
-from azureml.core.environment import Environment
 
 
+### Results <a name="hyperdrive_result"></a> 
+
+Best model has the Mean absolute error of 88124 and the accuracy of the model is 82 % , some of the parameters of the model are number of estimators and for the best model the value is 100 , seocnd parameter is maximum depth and best value from random parameter sampling is 8 and also minimum samples split wfor which the best value is 2 
+
+I think we can improve this model further by applying more hyperparameters like min_samples_leaf, n_jobs, and also by adding more data to the training data set , we can also perform feature engineering on date fields to split them into multiple fields as well 
+
+```
+run = experiment.submit(hyperdrive_run_config,show_output = True)
+RunDetails(run).show()
+run.get_status()
+run.wait_for_completion()
+```
+
+![]hyper_runwidget.PNG
+
+![]hyper_runwidget2.PNG
+
+![]hyperdrive_bestrun.PNG
+
+![]hyperdrive_runwidget3.PNG
+
+## Model Deployment <a name="deployment"></a>
+
+Best model when we compare the mean absolute error of two methods is Voting ensemble which is trained using automl
+
+First step in deploying the mode is identifying the best run and best fitted model , we can register the model using below command 
+once the model is registered we can define the inference configuration which is used to make calls to end point , we can add a script as input to inference 
+and next we define the web service with deployement configurations like number of CPU/GPU's , memory and tags and we also need to define the environment variables which helps have the same configurations and also install the necessary packages on docker image
+
+Next step is to deploy the model using deploy method , below is the method that can deploy the code and also screen shot of the endpoint 
+
+```
+model = best_run.register_model(model_path = './outputs',model_name = 'house_sales1')
+
+best_run.download_file(constants.CONDA_ENV_FILE_PATH, 'myenv.yml')
 myenv = Environment.from_conda_specification(name="myenv", file_path="myenv.yml")
-inference_config = InferenceConfig(entry_script="scoring.py", environment=myenv)
 
-aciconfig = AciWebservice.deploy_configuration(cpu_cores=1,
-                                               auth_enabled=True, # this flag generates API keys to secure access
-                                               memory_gb=1,
-                                               tags={'name': 'housing', 'framework': 'Keras'},
-                                               description='Keras MLP on california housing')
 
-service = Model.deploy(workspace=ws, 
-                           name='keras-housing-svc', 
-                           models=[model], 
-                           inference_config=inference_config, 
-                           deployment_config=aciconfig)
+inference_config = InferenceConfig(entry_script="scoring.py",environment=myenv)
+
+aci_config = AciWebservice.deploy_configuration(
+    cpu_cores=1,
+    auth_enabled=True,
+    memory_gb=1,
+    tags = {'name':'housing sales'},
+    description='housing sales model'
+)
+
+service = Model.deploy(workspace=ws,
+                        name = 'house-sale',
+                        models= [model],
+                        inference_config=inference_config,
+                        deployment_config=aci_config
+)
 
 service.wait_for_deployment(True)
 print(service.state)
-```
-After a successfull deployment we can access the scoring uri with:
-```
-print(service.scoring_uri)
-```
-![model_deployed](https://github.com/elenacramer/nd00333-capstone/blob/master/starter_file/hyperdrive_keras_model/screenshots/keras_model_deployed_healthy.png)
 
-We can test the deployed model. We pick the first 5 samples from the test set, and send it to the web service hosted in ACI. We note here that we are using the run API in the SDK to invoke the service (we can also make raw HTTP calls using any HTTP tool such as curl).
-```
-import json
-
-test_s=x_test[:5].tolist()
-test_samples = json.dumps({"data": test_s})
-test_samples = bytes(test_samples, encoding='utf8')
-
-# predict using the deployed model
-result = service.run(input_data=test_samples)
-
-from sklearn.metrics import mean_absolute_error
-mae_test = mean_absolute_error(y_test[:5], np.array(result))
-print(round(mae_test, 3))
-```
-We can now send construct raw HTTP request and send to the service. Todo so, we need to add a key to the HTTP header:
-```
-import requests
-
-key1, Key2 = service.get_keys()
-
-# send a random row from the test set to score
-random_index = np.random.randint(0, len(x_test)-1)
-input_data = "{\"data\": [" + str(list(x_test[random_index])) + "]}"
-
-headers = {'Content-Type':'application/json', 'Authorization': 'Bearer ' + key1}
-
-resp = requests.post(service.scoring_uri, input_data, headers=headers)
-
-print("POST to url", service.scoring_uri)
-#print("input data:", input_data)
-print("label:", y_test[random_index])
-print("prediction:", resp.text)
 ```
 
-We can have a look at the workspace after the web service was deployed: 
-```
+![]model_endpoint1.PNG
 
-model = ws.models['keras-housing']
-print("Model: {}, ID: {}".format('keras-housing', model.id))
-    
-webservice = ws.webservices['keras-housing-svc']
-print("Webservice: {}, scoring URI: {}".format('keras-housing-svc', webservice.scoring_uri))
-```
-```
-Model: keras-housing, ID: keras-housing:2
-Webservice: keras-housing-svc, scoring URI: http://d16dbe64-9b27-48b9-9cf8-3bc605fec3c7.southcentralus.azurecontainer.io/score
-```
-At the end we delete the ACI deployment as well as the compute cluster:
-![clean_up](https://github.com/elenacramer/nd00333-capstone/blob/master/starter_file/hyperdrive_keras_model/screenshots/clean_up.png)
+![]model_endpoint.PNG
 
-## Screen Recording  <a name="recording"></a>
-[Screencast](https://youtu.be/05gfBcdG8OQ)
+## Screen Recording <a name="recording"></a>
+https://drive.google.com/file/d/1tkQBvxxhjQakv0Ar0zY1sItEpxAm4jQa/view?usp=sharing
 
-## Standout Suggestions <a name="standout"></a>
-(**Optional**)
+## Standout Suggestions
+
+I have faced few problems with virtual enviroment , i would suggest it's better to have a different kind of structure 
+becuase of the slowness of the virtual lab it was difficult the train a model with huge dataset it would be great if you can define the list of datasets to choose from in the future which will be compatible with automl trianing 
