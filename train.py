@@ -17,6 +17,10 @@ from azureml.core.run import Run
 # azureml-dataprep[pandas] of version 1.1.34 or higher is required
 from azureml.core import Workspace, Dataset
 
+subscription_id = 'c1dcf523-8ab0-429f-8dba-143a6c49ec84'
+resource_group = 'aml-quickstarts-129344'
+workspace_name = 'quick-starts-ws-129344'
+
 workspace = Workspace(subscription_id, resource_group, workspace_name)
 
 dataset = Dataset.get_by_name(workspace, name='house_sales')
