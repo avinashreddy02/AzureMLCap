@@ -174,7 +174,7 @@ run.wait_for_completion()
 
 ![](hyper_runwidget2.PNG)
 
-![](hyperdrive_bestrun.PNG)
+![](hyperdirve_bestrun.PNG)
 
 ![](hyperdrive_runwidget3.PNG)
 
