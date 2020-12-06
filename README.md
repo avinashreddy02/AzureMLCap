@@ -222,7 +222,7 @@ print(service.state)
 ![](model_endpoint.PNG)
 
 ## Screen Recording <a name="recording"></a>
-https://drive.google.com/file/d/1tkQBvxxhjQakv0Ar0zY1sItEpxAm4jQa/view?usp=sharing
+https://youtu.be/o7Kw6eYpD8M
 
 ## Standout Suggestions
 
