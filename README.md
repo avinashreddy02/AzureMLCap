@@ -197,7 +197,7 @@ run.wait_for_completion()
 
 ## Overview of two models and how to improve project <a name="model_overview_suggestions"></a>
 
-for the experiment of Hyperdrive the best performing model has an MAE of 88124 and the hyperparameters of the model for randomforest regressor are n_estimators is 120, min samples split as 8 and maximum depth of 8 as well 
+for the experiment of Hyperdrive the best performing model has an MAE of 88124 and the hyperparameters of the model for randomforest regressor are n_estimators is 100, min samples split as 8 and maximum depth of 8 as well 
 
 for the experiment of Automl the best performing model has an MAE of 68316 and some of the parameters of the model as boositng type , learning rate, max_depth of the tree, number of estimators and the model that is used is LigbtGBMregressor we could improve the model by training with more data and adding different types of data which helps the model to generalize better later 
 
