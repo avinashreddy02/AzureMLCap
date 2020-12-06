@@ -142,6 +142,8 @@ Status: Completed)
 ```
 Screen shots of the Best model and the steps and how it performed 
 
+![](best_run_studio_automl1.PNG)
+
 ![](automl_bestrun1.PNG)
 
 ![](true_predict_automl.PNG)
@@ -178,9 +180,15 @@ run.get_status()
 run.wait_for_completion()
 ```
 
+![](run_widget1.PNG)
+
+![](run_widget_2.PNG)
+
 ![](hyper_runwidget.PNG)
 
 ![](hyper_runwidget2.PNG)
+
+![](best_run_studio.PNG)
 
 ![](hyperdirve_bestrun.PNG)
 
@@ -230,7 +238,7 @@ print(service.state)
 ![](model_endpoint.PNG)
 
 ## Screen Recording <a name="recording"></a>
-https://youtu.be/o7Kw6eYpD8M
+[Screen Cast](https://youtu.be/o7Kw6eYpD8M)
 
 ## Standout Suggestions
 
