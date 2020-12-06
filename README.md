@@ -194,6 +194,21 @@ run.wait_for_completion()
 
 ![](hyperdrive_runwidget3.PNG)
 
+## Overview of two model and how to improve project
+
+for the experiment of Hyperdrive the best performing model has an MAE of 88124 and the hyperparameters of the model for randomforest regressor are n_estimators is 120, min samples split as 8 and maximum depth of 8 as well 
+
+for the experiment of Automl the best performing model has an MAE of 68316 and some of the parameters of the model as boositng type , learning rate, max_depth of the tree, number of estimators and the model that is used is LigbtGBMregressor we could improve the model by training with more data and adding different types of data which helps the model to generalize better later 
+
+when i compare the both experiments automl model has less MAE and i have selected that metric as my primary to minimize , as the automl model has better MAE i have used that model to deploy it 
+
+when it comes to suggestions on improving this project, i think it will make it better if we can create our own algorithm and bring it into Azure and deploy it 
+as most of the real case scenario usually they train their model on local model and then register it in Azure using Docker and bring your own model method 
+
+that will also give a chance to train any kind of models from deep learning to RNN's using tensorflow and Pytorch 
+
+
+
 ## Model Deployment <a name="deployment"></a>
 
 Best model when we compare the mean absolute error of two methods is Voting ensemble which is trained using automl
@@ -203,6 +218,8 @@ once the model is registered we can define the inference configuration which is 
 and next we define the web service with deployement configurations like number of CPU/GPU's , memory and tags and we also need to define the environment variables which helps have the same configurations and also install the necessary packages on docker image
 
 Next step is to deploy the model using deploy method , below is the method that can deploy the code and also screen shot of the endpoint 
+
+once the endpoint is deployed and active , we can make a call to the end point using Http request for inference , i have prepared the data into json format initially to pass as the input to the http request , second is get the keys and service URI , key is used as authorization in the header to call the while posting the data to service URI , once we have all the data in json , service URI and key we can make a call by sending the data in application/json format 
 
 ```
 model = best_run.register_model(model_path = './outputs',model_name = 'house_sales1')
