@@ -47,6 +47,14 @@ While setting up the AutomL run we first need to define the automl configuration
 
 For this experiment i have selected regression as the task, Price as the label column, and for regression task normalized mean absolute error actually generalizes the model better so i have selected that and i have defined the timout minutes based on the common practices 
 here are the automl settings i have selected for the automl run 
+
+from the below list of settings i have selected verbosity as logging info , it defines verbosity level of writing to log file and i have selected defaulted value of INFO which will log all the info 
+
+i have also selected the enable early stopping to be true because i would like the model to stop training if the performance of the previous iterations is better
+
+i have selected the experiment timeout to be 3 hours as it will be more than enough to complete this task and also for each iteration time out has been set as 10 minutes as that will be good enough to complete the training for each iteration 
+
+i have enabled the featurization to Auto as the data is pretty much in good shape and need very few changes , otherwise we can define a custom featurization when the data is messy , i have selected the number of cross validations to be 5 as a random selection , which means for each model training the cross validation is performed 5 times at different splits on dataset 
 ```
 automl_settings = {
     "iteration_timeout_minutes": 10,
