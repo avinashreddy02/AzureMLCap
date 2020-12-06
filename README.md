@@ -9,6 +9,7 @@
     - [Result](##automl_result)
 - [Hyperparameter Tuning](##hyperdrive)
     - [Result](##hyperdrive_result)
+ - [Model Overview and Suggestions](##model_overview_suggestions)
  - [Model Deployment](##deployment)
  - [screen Recording](##recording) 
  - [Standout Suggestions](##standout)
@@ -194,7 +195,7 @@ run.wait_for_completion()
 
 ![](hyperdrive_runwidget3.PNG)
 
-## Overview of two model and how to improve project
+## Overview of two models and how to improve project <a name="model_overview_suggestions"></a>
 
 for the experiment of Hyperdrive the best performing model has an MAE of 88124 and the hyperparameters of the model for randomforest regressor are n_estimators is 120, min samples split as 8 and maximum depth of 8 as well 
 
