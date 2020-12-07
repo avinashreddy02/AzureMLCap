@@ -87,7 +87,7 @@ RunDetails(remote_run).show()
 remote_run.get_status()
 remote_run.wait_for_completion()
 ```
-Screen shot of the run details widget
+### Screen shot of the run details widget for automl
 
 ![](runwidget_1.PNG)
 
@@ -142,7 +142,7 @@ Status: Completed)
                              weights=[1.0]))]
 
 ```
-Screen shots of the Best model and the steps and how it performed 
+### Screen shots of the Best model and the steps and how it performed for automl
 
 ![](best_run_studio_automl1.PNG)
 
@@ -266,6 +266,7 @@ service.wait_for_deployment(True)
 print(service.state)
 
 ```
+### Deployed Model endpoint 
 
 ![](model_endpoint1.PNG)
 
