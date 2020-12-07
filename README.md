@@ -9,7 +9,8 @@
     - [Result](##automl_result)
 - [Hyperparameter Tuning](##hyperdrive)
     - [Result](##hyperdrive_result)
- - [Model Overview and Suggestions](##model_overview_suggestions)
+ - [Model Overview](##model_overview_suggestions)
+ - [How to improve](##improve)
  - [Model Deployment](##deployment)
  - [screen Recording](##recording) 
  - [Standout Suggestions](##standout)
@@ -181,6 +182,7 @@ run.get_status()
 run.wait_for_completion()
 ```
 
+### Run widget details showing progress 
 ![](run_widget1.PNG)
 
 ![](run_widget_2.PNG)
@@ -191,11 +193,19 @@ run.wait_for_completion()
 
 ![](best_run_studio.PNG)
 
+### Best run and the id
+
 ![](hyperdirve_bestrun.PNG)
 
 ![](hyperdrive_runwidget3.PNG)
 
-## Overview of two models and how to improve project <a name="model_overview_suggestions"></a>
+### Best model registered 
+
+![](best_model1.PNG)
+
+![](best_model.PNG)
+
+## Overview of two models <a name="model_overview_suggestions"></a>
 
 for the experiment of Hyperdrive the best performing model has an MAE of 88124 and the hyperparameters of the model for randomforest regressor are n_estimators is 100, min samples split as 8 and maximum depth of 8 as well 
 
@@ -203,11 +213,17 @@ for the experiment of Automl the best performing model has an MAE of 68316 and s
 
 when i compare the both experiments automl model has less MAE and i have selected that metric as my primary to minimize , as the automl model has better MAE i have used that model to deploy it 
 
+
+## How to improve model <a name="improve"></a>
+
 when it comes to suggestions on improving this project, i think it will make it better if we can create our own algorithm and bring it into Azure and deploy it 
 as most of the real case scenario usually they train their model on local model and then register it in Azure using Docker and bring your own model method 
 
 that will also give a chance to train any kind of models from deep learning to RNN's using tensorflow and Pytorch 
 
+and also it will make the project better if i can train the hyperdrive model with different other configurations like grid sampling and different early termination policy , we can also make the training as pipeline , that way when the new data comes in we can clearly re train the pipeline without building from start 
+
+with the current set up the data we have for training can be more and i would like to improve it by gatehring more data and creating more feature using feature engineering as well and also deploying the final model as rest endpoint for inference through a UI where you can input the details and once you submit the output will be returned 
 
 
 ## Model Deployment <a name="deployment"></a>
